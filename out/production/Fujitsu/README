@@ -1,2 +1,0 @@
-DAO class was added in case persistence would be added in the future;
-right now - InMemoryRentalDAO serves the purpose of the inventory.
