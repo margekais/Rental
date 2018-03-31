@@ -13,7 +13,7 @@ public class Main {
 
         Customer customer1 = new Customer("Marge Käis");
         Customer customer2 = new Customer("Mari Maasikas");
-        Customer customer3 = new Customer("Jüri Jüriöö");
+        Customer customer3 = new Customer("Jüri Juurikas");
         dao.saveCustomer(customer1);
         dao.saveCustomer(customer2);
         dao.saveCustomer(customer3);
@@ -25,7 +25,7 @@ public class Main {
         ci1.addRegularRental("Spider man 2", 2);
         ci1.addRegularRental("Out of africa",7);
         ci1.payWithMoney();
-        System.out.println(ci1.getCustomer());
+        //System.out.println(ci1.getCustomer());
 
 
         System.out.println();
@@ -35,7 +35,7 @@ public class Main {
         ci2.addLateReturn(1000,2);
         ci2.addRegularRental("Spider man",1);
         ci2.payWithMoney();
-        System.out.println(ci2.getCustomer());
+        //System.out.println(ci2.getCustomer());
 
 
         System.out.println();
@@ -59,10 +59,12 @@ public class Main {
         inventory.removeFilm(f3);
         inventory.changeFilmType(f1,FilmType.OLDFILM);
         inventory.changeFilmType(f1,FilmType.REGULARRENTAL);
-        System.out.println(inventory.listAllFilms());
+        System.out.println(inventory.toStringListAllFilms());
         System.out.println();
-        System.out.println(inventory.listFilmsInStore());
+        System.out.println(inventory.toStringListFilmsInStore());
 
+        System.out.println(dao.findCustomers());
+        System.out.println(dao.findCustomer(1000));
     }
 
 }

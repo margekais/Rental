@@ -55,6 +55,7 @@ public class Inventory {
     public String toStringListAllFilms(){
         List<Film> allFilms = listAllFilms();
         StringBuilder sb = new StringBuilder();
+        sb.append("All films: " + System.lineSeparator());
         for(Film f: allFilms){
             sb.append(f + System.lineSeparator());
         }
@@ -63,6 +64,7 @@ public class Inventory {
     public String toStringListFilmsInStore(){
         List<Film> filmsInStore = listFilmsInStore();
         StringBuilder sb = new StringBuilder();
+        sb.append("All currently available films: " + System.lineSeparator());
         for(Film f: filmsInStore){
             sb.append(f + System.lineSeparator());
         }

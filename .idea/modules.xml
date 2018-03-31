@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Fujitsu.iml" filepath="$PROJECT_DIR$/Fujitsu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VideoRental.iml" filepath="$PROJECT_DIR$/VideoRental.iml" />
     </modules>
   </component>
 </project>
