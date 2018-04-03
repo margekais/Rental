@@ -14,13 +14,10 @@ public class Inventory {
     }
 
     public void addFilm(Film film){
-        //check if the item isn't already in the inventory
-        if(dao.findFilm(film.getFilmID())==null){
-            dao.saveFilm(film);
-        }
-        else{
-            throw new RuntimeException("This item already is in the inventory.");
-        }
+        //since ID-s are auto-generated and copies of films are allowed, there is no need
+        //for extra conditions before saving a new film
+        dao.saveFilm(film);
+
     }
 
     public void removeFilm(Film film){
@@ -34,13 +31,18 @@ public class Inventory {
     }
 
     public void changeFilmType(Film film, FilmType newType){
+        //check if the new film type is indeed different from the current one
+        if(film.getType()==newType){
+            throw new RuntimeException("The film is already of that type.");
+        }
+
         //check if the item indeed exists in the inventory
         if(!(dao.findFilm(film.getFilmID())==null)){
             Film changeable = dao.findFilm(film.getFilmID());
             changeable.setType(newType);
         }
         else{
-            throw new RuntimeException("The film you want to change type of doesn't exist.");
+            throw new RuntimeException("The film you want to change the type of doesn't exist.");
         }
     }
 

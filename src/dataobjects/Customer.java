@@ -8,7 +8,7 @@ public class Customer {
     private int bonusPoints;
 
     //AtomicInteger is used as it is thread safe and
-    // the getAndIncrement method is atomic
+    //the getAndIncrement method is atomic
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
 
 

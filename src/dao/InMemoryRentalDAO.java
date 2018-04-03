@@ -57,7 +57,10 @@ public class InMemoryRentalDAO implements RentalDAO {
                 copies.add(f);
             }
         }
-        return copies;
+        if(!(copies.size()==0)){
+            return copies;
+        }
+        return null;
     }
 
     @Override

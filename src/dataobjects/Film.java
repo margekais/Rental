@@ -8,9 +8,8 @@ public class Film {
     private FilmType type;
     private boolean inStore;
 
-    /*ID is required as there can be many copies of the same film
-    and the ID is what differentiates the copies from each other
-     */
+    //ID is required as there can be many copies of the same film
+    //and the ID is what differentiates the copies from each other
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
 
 

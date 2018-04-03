@@ -24,24 +24,12 @@ public class CustomerInteraction {
         return total;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
     public Customer getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
     public List<Rental> getRentals() {
         return rentals;
-    }
-
-    public void setRentals(List<Rental> rentals) {
-        this.rentals = rentals;
     }
 
     public String toStringWithMoney(){
@@ -75,11 +63,18 @@ public class CustomerInteraction {
         return sb.toString();
     }
 
-    public void addRegularRental(String name, int daysRentedFor){
+    public void addRegularRental(String filmName, int daysRentedFor) throws IllegalArgumentException{
 
-        //try accessing copies of the film with the input name
+        if(daysRentedFor<=0){
+            throw new IllegalArgumentException("A film can't be rented for less than one day.");
+        }
+
+        //try accessing copies of the film with the input filmName
+        List<Film> copies = dao.findCopies(filmName);
+
         try{
-            List<Film> copies = dao.findCopies(name);
+            //throw a NullPointerException if the list of copies is empty
+            Film copy = copies.get(0);
 
             //check if at least one of the copies of this film is currently in the store
             Film rentable = null;
@@ -90,86 +85,105 @@ public class CustomerInteraction {
                 }
             }
 
+            //check if a copy was found
             if(!(rentable==null)){
                 Rental rental = new RegularRental(this.customer,rentable,daysRentedFor);
-                rentals.add(rental);
                 total += rental.getSum();
+                rentals.add(rental);
+                //rental is saved only when paying so it is presumed
+                //that one customer won't rent several copies of the same film
+                dao.saveRental(rental);
             }
             else{
-                throw new RuntimeException("There currently are no copies of " + name  + " in the inventory.");
+                throw new IllegalArgumentException("There currently are no copies of " + filmName  + " in the inventory.");
             }
         }
-        catch (NullPointerException e){
-            throw new RuntimeException("There are no films in the inventory named " + name + ".");
+        catch(NullPointerException e){
+            throw new IllegalArgumentException("There are no films in the inventory named " + filmName + ".");
         }
     }
 
-    public void addLateReturn(int filmID, int daysLate){
+    public void addLateReturn(int filmID, int daysLate) throws IllegalArgumentException{
+
+        if(daysLate<=0){
+            throw new IllegalArgumentException("A film can't be late for less than one day.");
+        }
 
         Film film = dao.findFilm(filmID);
 
-        /*check if the film exists in the store and it actually isn't in stock before initializing
-            the return return to handle incorrect inputs*/
+        //check if the film exists in the store and it actually isn't in stock before initializing
+        //the return to handle incorrect inputs
         if(!(film==null)){
             if(!film.isInStore()){
                 Rental rental = new LateReturn(this.customer,film,daysLate);
-                rentals.add(rental);
-                total += rental.getSum();
+                this.total += rental.getSum();
+                this.rentals.add(rental);
+                dao.saveRental(rental);
             }
             else{
-                throw new RuntimeException("The film with the ID " + filmID + " is in store.");
+                throw  new IllegalArgumentException("The film with the ID " + filmID + " is already in store.");
             }
         }
         else{
-            throw new RuntimeException("There are no films in the inventory with the ID " + filmID + ".");
+            throw new IllegalArgumentException("There are no films in the inventory with the ID " + filmID + ".");
         }
 
     }
 
-
     public void payWithMoney(){
-        for(Rental r: rentals){
-            if(r instanceof RegularRental){
 
-                dao.saveRental(r);
+        if(rentals.size()==0){
+            System.out.println("Nothing to pay for (no rentals added).");
+        }
+        else{
+            for(Rental r: rentals){
+                if(r instanceof RegularRental){
 
-                if(r.getFilm().getType()==FilmType.NEWRELEASE){
-                    customer.setBonusPoints(2);
-                }
-                else{
-                    customer.setBonusPoints(1);
+                    dao.saveRental(r);
+
+                    if(r.getFilm().getType()==FilmType.NEWRELEASE){
+                        customer.setBonusPoints(2);
+                    }
+                    else{
+                        customer.setBonusPoints(1);
+                    }
                 }
             }
-        }
         System.out.println(toStringWithMoney());
+        }
     }
 
     public void payWithBonus(){
 
-        //check  if only one film is wished to pay for
-        if(rentals.size()==1){
-            Rental rental = rentals.get(0);
-            Film rentable = rental.getFilm();
+        if(rentals.size()==0){
+            System.out.println("Nothing to pay for (no rentals added).");
+        }
+        else{
+            //check  if only one film is wished to pay for
+            if(rentals.size()==1){
+                Rental rental = rentals.get(0);
+                Film rentable = rental.getFilm();
 
-            //check if the film is of type New release
-            if(rentable.getType()==FilmType.NEWRELEASE){
-                if(customer.getBonusPoints()>=25){
-                    dao.saveRental(rental);
-                    customer.setBonusPoints(-25);
+                //check if the film is of type New release
+                if(rentable.getType()==FilmType.NEWRELEASE){
+                    if(customer.getBonusPoints()>=25){
+                        dao.saveRental(rental);
+                        customer.setBonusPoints(-25);
+                    }
+                    else{
+                        throw new RuntimeException("The customer doesn't have sufficient bonus points.");
+                    }
                 }
                 else{
-                    throw new RuntimeException("The customer doesn't have sufficient bonus points.");
+                    throw new RuntimeException("Only New release films can be payed for with bonus points.");
                 }
             }
             else{
-                throw new RuntimeException("Only New release films can be payed for with bonus points");
-            }
-        }
-        else{
-            throw new RuntimeException("Only one New release film can be purchased with bonus at a time.");
+                throw new RuntimeException("Only one New release film can be purchased with bonus at a time.");
 
+            }
+            System.out.println(toStringWithBonus());
         }
-        System.out.println(toStringWithBonus());
     }
 
 }
